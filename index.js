@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 const router = require("./route/index");
 const { kStringMaxLength } = require("buffer");
 const url = process.env.URL;
-const upload = multer({ dest: "uploads/" });
+const upload = multer();
 const connectDB = async () => {
   try {
     await mongoose.connect(url);
