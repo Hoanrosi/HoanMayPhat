@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 const router = require("./route/index");
 const { kStringMaxLength } = require("buffer");
 const url = process.env.URL;
-const upload = multer();
+const upload = multer({ dest: "uploads/" });
 const connectDB = async () => {
   try {
     await mongoose.connect(url);
@@ -72,7 +72,8 @@ app.post("/upload", upload.single("excel"), async (req, res) => {
 app.get("/get-all-data", async (req, res) => {
   try {
     const allData = await DataModel.find();
-    res.status(200).json(allData);
+    console.log(allData);
+    res.status(200).json({ allData: allData, records: allData.length() });
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching data" });
   }
