@@ -21,6 +21,7 @@ const connectDB = async () => {
   }
 };
 connectDB();
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
@@ -63,6 +64,14 @@ app.post("/upload", upload.single("excel"), async (req, res) => {
       newData.save();
     });
 
+    // const newData = new DataModel({
+    //   UPS: upSheets.map((sheetName) => ({
+    //     data: allSheetData[sheetName],
+    //   })),
+    // });
+
+    // await newData.save();
+
     res.status(200).json({ message: "Data imported successfully" });
   } catch (error) {
     res.status(500).json({ error: "An error occurred during data import" });
@@ -72,8 +81,7 @@ app.post("/upload", upload.single("excel"), async (req, res) => {
 app.get("/get-all-data", async (req, res) => {
   try {
     const allData = await DataModel.find();
-    console.log(allData);
-    res.status(200).json(allData.length());
+    res.status(200).json(allData);
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching data" });
   }
