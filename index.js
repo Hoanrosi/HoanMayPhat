@@ -73,7 +73,7 @@ app.get("/get-all-data", async (req, res) => {
   try {
     const allData = await DataModel.find();
     console.log(allData);
-    res.status(200).json({ allData: allData, records: allData.length() });
+    res.status(200).json(allData.length());
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching data" });
   }
