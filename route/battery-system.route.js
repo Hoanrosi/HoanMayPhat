@@ -25,7 +25,9 @@ router.post(
   controller.uploadFileEaton
 );
 
-router.get("/", controller.list);
+router.get("/ups/eaton", controller.listEaton);
+router.get("/ups/chloride", controller.listChloride);
+
 router.put("/:id", controller.updateRecord);
 
 module.exports = router;
