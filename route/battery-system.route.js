@@ -14,8 +14,17 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+router.post(
+  "/upload-file-chloride",
+  upload.single("excelFile"),
+  controller.uploadFileChloride
+);
+router.post(
+  "/upload-file-eaton",
+  upload.single("excelFile"),
+  controller.uploadFileEaton
+);
 
-router.post("/upload-file", upload.single("excelFile"), controller.uploadFile);
 router.get("/", controller.list);
 router.put("/:id", controller.updateRecord);
 
