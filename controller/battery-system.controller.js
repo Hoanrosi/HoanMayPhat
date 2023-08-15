@@ -1,4 +1,3 @@
-const { log } = require("console");
 const ExcelJS = require("exceljs");
 const path = require("path");
 const fs = require("fs");
@@ -13,37 +12,40 @@ const client = new MongoClient(mongoURL, {
 });
 
 const dbName = "test";
-const collectionName = "EATON";
+const eatonData = "EATON";
+const chlorideData = "CHLORIDE";
 
 const db = client.db(dbName);
-const collection = db.collection(collectionName);
-
+const eaton = db.collection(eatonData);
+const chloride = db.collection(chlorideData);
 const HandleUploadFile = {
-  uploadFile: async (req, res) => {
+  uploadFileEaton: async (req, res) => {
     try {
-      console.log(pathSrc);
-
       const filePath = path.join(pathSrc, req.file.filename);
-
       const workbook = new ExcelJS.Workbook();
+
       await workbook.xlsx.readFile(filePath);
+
       const sheets = workbook.worksheets;
 
       // Cac cot
-      const fileds = [
-        "name",
-        "date",
-        "noiTro",
-        "dienApDoKiem",
-        "nhietDoDoKiem",
-        "hang",
-        "toAcQuy",
-        "nsx",
-        "xuatsu",
-        "model",
-        "thoiGianLap",
+      const fields = [
+        "Tên Bình",
+        "Ngày đo kiểm",
+        "Nội trở đo kiểm",
+        "Điện áp đo kiểm",
+        "Nhiệt độ đo kiểm",
+        "Hãng UPS",
+        "Tổ ắc quy",
+        "Nhà sản xuất",
+        "Xuất xứ",
+        "Model ắc quy",
+        "Thời gian lắp đặt",
+        "Số năm sử dụng",
+        "Kích thước",
+        "Note",
+        "Nội trở tiêu chuẩn",
       ];
-      const data = [];
       for (let sheet of sheets) {
         const actualColumnCount = sheet.actualColumnCount;
         const actualRowCount = sheet.actualRowCount;
@@ -66,49 +68,65 @@ const HandleUploadFile = {
             xuatsu: null,
             model: null,
             thoiGianLap: null,
+            soNamSuDung: null,
+            kichThuoc: null,
+            note: null,
+            noiTroTieuChuan: null,
           };
 
           for (let j = 1; j <= actualColumnCount; j++) {
             const cellValue = sheet.getRow(i).getCell(j).value;
-            switch (fileds[j - 1]) {
-              case "name":
+            switch (fields[j - 1]) {
+              case "Tên Bình":
                 obj.name = cellValue;
                 break;
-              case "date":
+              case "Ngày đo kiểm":
                 obj.date = cellValue;
                 break;
-              case "noiTro":
+              case "Nội trở đo kiểm":
                 obj.noiTro = cellValue;
 
-              case "dienApDoKiem":
+              case "Điện áp đo kiểm":
                 obj.dienApDoKiem = cellValue;
                 break;
 
-              case "nhietDoDoKiem":
+              case "Nhiệt độ đo kiểm":
                 obj.nhietDoDoKiem = cellValue;
                 break;
 
-              case "hang":
+              case "Hãng UPS":
                 obj.hang = cellValue;
                 break;
 
-              case "toAcQuy":
+              case "Tổ ắc quy":
                 obj.toAcQuy = cellValue;
                 break;
-              case "nsx":
+              case "Nhà sản xuất":
                 obj.nsx = cellValue;
                 break;
 
-              case "xuatsu":
+              case "Xuất xứ":
                 obj.xuatsu = cellValue;
                 break;
 
-              case "model":
+              case "Model ắc quy":
                 obj.model = cellValue;
                 break;
 
-              case "thoiGianLap":
+              case "Thời gian lắp đặt":
                 obj.thoiGianLap = cellValue;
+                break;
+              case "Số năm sử dụng":
+                obj.soNamSuDung = cellValue;
+                break;
+              case "Kích thước":
+                obj.kichThuoc = cellValue;
+                break;
+              case "Note":
+                obj.note = cellValue;
+                break;
+              case "Nội trở tiêu chuẩn":
+                obj.noiTroTieuChuan = cellValue;
                 break;
               default:
                 break;
@@ -116,7 +134,132 @@ const HandleUploadFile = {
           }
           sheetData.UDP.push(obj);
         }
-        const insertResult = await collection.insertOne(sheetData);
+        const resultData = await eaton.insertOne(sheetData);
+      }
+      res.json({});
+      return res.status(200);
+    } catch (error) {
+      console.log(error);
+      return res.status(200).json({});
+    }
+  },
+  uploadFileChloride: async (req, res) => {
+    try {
+      console.log("req.file???", req.file);
+      const filePath = path.join(pathSrc, req.file.filename);
+      const workbook = new ExcelJS.Workbook();
+
+      await workbook.xlsx.readFile(filePath);
+
+      const sheets = workbook.worksheets;
+
+      // Cac cot
+      const fields = [
+        "Tên Bình",
+        "Ngày đo kiểm",
+        "Nội trở đo kiểm",
+        "Điện áp đo kiểm",
+        "Nhiệt độ đo kiểm",
+        "Hãng UPS",
+        "Tổ ắc quy",
+        "Nhà sản xuất",
+        "Xuất xứ",
+        "Model ắc quy",
+        "Thời gian lắp đặt",
+        "Số năm sử dụng",
+        "Kích thước",
+        "Note",
+        "Nội trở tiêu chuẩn",
+      ];
+      for (let sheet of sheets) {
+        const actualColumnCount = sheet.actualColumnCount;
+        const actualRowCount = sheet.actualRowCount;
+        const sheetData = {
+          sheetName: sheet.name,
+          UDP: [],
+        };
+        for (let i = 2; i <= actualRowCount; i++) {
+          // Obj muon tao ra trong DB
+          const obj = {
+            _id: uuidv4(),
+            name: null,
+            date: null,
+            noiTro: null,
+            dienApDoKiem: null,
+            nhietDoDoKiem: null,
+            hang: null,
+            toAcQuy: null,
+            nsx: null,
+            xuatsu: null,
+            model: null,
+            thoiGianLap: null,
+            soNamSuDung: null,
+            kichThuoc: null,
+            note: null,
+            noiTroTieuChuan: null,
+          };
+
+          for (let j = 1; j <= actualColumnCount; j++) {
+            const cellValue = sheet.getRow(i).getCell(j).value;
+            switch (fields[j - 1]) {
+              case "Tên Bình":
+                obj.name = cellValue;
+                break;
+              case "Ngày đo kiểm":
+                obj.date = cellValue;
+                break;
+              case "Nội trở đo kiểm":
+                obj.noiTro = cellValue;
+
+              case "Điện áp đo kiểm":
+                obj.dienApDoKiem = cellValue;
+                break;
+
+              case "Nhiệt độ đo kiểm":
+                obj.nhietDoDoKiem = cellValue;
+                break;
+
+              case "Hãng UPS":
+                obj.hang = cellValue;
+                break;
+
+              case "Tổ ắc quy":
+                obj.toAcQuy = cellValue;
+                break;
+              case "Nhà sản xuất":
+                obj.nsx = cellValue;
+                break;
+
+              case "Xuất xứ":
+                obj.xuatsu = cellValue;
+                break;
+
+              case "Model ắc quy":
+                obj.model = cellValue;
+                break;
+
+              case "Thời gian lắp đặt":
+                obj.thoiGianLap = cellValue;
+                break;
+              case "Số năm sử dụng":
+                obj.soNamSuDung = cellValue;
+                break;
+              case "Kích thước":
+                obj.kichThuoc = cellValue;
+                break;
+              case "Note":
+                obj.note = cellValue;
+                break;
+              case "Nội trở tiêu chuẩn":
+                obj.noiTroTieuChuan = cellValue;
+                break;
+              default:
+                break;
+            }
+          }
+          sheetData.UDP.push(obj);
+        }
+        const resultData = await chloride.insertOne(sheetData);
       }
       res.json({});
       return res.status(200);
