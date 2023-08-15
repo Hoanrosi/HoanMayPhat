@@ -269,12 +269,16 @@ const HandleUploadFile = {
     }
   },
 
-  list: async (req, res) => {
-    const documents = await collection.find().toArray();
+  listEaton: async (req, res) => {
+    const documents = await eaton.find().toArray();
     res.json(documents);
     return res.status(200);
   },
-
+  listChloride: async (req, res) => {
+    const documents = await chloride.find().toArray();
+    res.json(documents);
+    return res.status(200);
+  },
   updateRecord: async (req, res) => {
     const documentId = req.params.id;
     const data = req.body;
