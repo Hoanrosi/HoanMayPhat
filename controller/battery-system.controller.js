@@ -301,9 +301,8 @@ const HandleUploadFile = {
       },
     };
     const element = updateArray.findIndex((e) => e._id === id);
-    const updateResult = await chloride.updateOne(filter, update);
-    res.json(updateResult);
-    return res.status(200).json(element);
+    await chloride.updateOne(filter, update);
+    res.status(200).json(updateArray[element]);
   },
   updateRecordEaton: async (req, res) => {
     const { upsId, id } = req.params;
@@ -324,9 +323,8 @@ const HandleUploadFile = {
       },
     };
     const element = updateArray.findIndex((e) => e._id === id);
-    const updateResult = await eaton.updateOne(filter, update);
-    res.json(updateResult);
-    return res.status(200).json(element);
+    await eaton.updateOne(filter, update);
+    res.status(200).json(updateArray[element]);
   },
 };
 
