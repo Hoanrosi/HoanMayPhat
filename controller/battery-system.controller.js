@@ -5,6 +5,9 @@ const pathSrc = require("../path.js");
 const { MongoClient } = require("mongodb");
 const { v4: uuidv4 } = require("uuid");
 
+const ObjectID = require("mongodb");
+const objectID = ObjectID.ObjectId;
+
 const mongoURL = "mongodb+srv://admin:admin@hoan.ral2lga.mongodb.net";
 const client = new MongoClient(mongoURL, {
   useNewUrlParser: true,
@@ -279,20 +282,51 @@ const HandleUploadFile = {
     res.json(documents);
     return res.status(200);
   },
-  updateRecord: async (req, res) => {
-    const documentId = req.params.id;
+  updateRecordChloride: async (req, res) => {
+    const { upsId, id } = req.params;
     const data = req.body;
-    const filter = { _id: new ObjectID(documentId) };
+    const filter = { _id: new objectID(upsId) };
+    const result = await chloride.findOne(filter);
+    const updateArray = result.UDP || [];
+    updateArray.forEach((e) => {
+      if (e._id === id) {
+        e.noiTro = data.noiTro;
+        e.dienApDoKiem = data.dienApDoKiem;
+        e.nhietDoDoKiem = data.nhietDoDoKiem;
+      }
+    });
     const update = {
       $set: {
-        noiTro: data.noiTro,
-        dienApDoKiem: data.dienApDoKiem,
-        nhietDoDoKiem: data.nhietDoDoKiem,
+        UDP: updateArray,
       },
     };
-    const updateResult = await collection.updateOne(filter, update);
+    const element = updateArray.findIndex((e) => e._id === id);
+    const updateResult = await chloride.updateOne(filter, update);
     res.json(updateResult);
-    return res.status(200);
+    return res.status(200).json(element);
+  },
+  updateRecordEaton: async (req, res) => {
+    const { upsId, id } = req.params;
+    const data = req.body;
+    const filter = { _id: new objectID(upsId) };
+    const result = await eaton.findOne(filter);
+    const updateArray = result.UDP || [];
+    updateArray.forEach((e) => {
+      if (e._id === id) {
+        e.noiTro = data.noiTro;
+        e.dienApDoKiem = data.dienApDoKiem;
+        e.nhietDoDoKiem = data.nhietDoDoKiem;
+      }
+    });
+    const update = {
+      $set: {
+        UDP: updateArray,
+      },
+    };
+    const element = updateArray.findIndex((e) => e._id === id);
+    const updateResult = await eaton.updateOne(filter, update);
+    res.json(updateResult);
+    return res.status(200).json(element);
   },
 };
 
