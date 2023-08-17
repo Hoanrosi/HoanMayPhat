@@ -28,6 +28,6 @@ router.post(
 router.get("/ups/eaton", controller.listEaton);
 router.get("/ups/chloride", controller.listChloride);
 
-router.put("/:id", controller.updateRecord);
-
+router.put("/ups/chloride/:upsId/udp/:id", controller.updateRecordChloride);
+router.put("ups/eaton/:upsId/udp/:id", controller.updateRecordEaton);
 module.exports = router;
