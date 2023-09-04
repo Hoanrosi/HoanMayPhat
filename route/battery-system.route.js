@@ -15,12 +15,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 router.post(
-  "/upload-file-chloride",
+  "/upload-file-chloride/:location",
   upload.single("excelFile"),
   controller.uploadFileChloride
 );
 router.post(
-  "/upload-file-eaton",
+  "/upload-file-eaton/:location",
   upload.single("excelFile"),
   controller.uploadFileEaton
 );
@@ -29,5 +29,11 @@ router.get("/ups/eaton", controller.listEaton);
 router.get("/ups/chloride", controller.listChloride);
 
 router.put("/ups/chloride/:upsId/udp/:id", controller.updateRecordChloride);
-router.put("ups/eaton/:upsId/udp/:id", controller.updateRecordEaton);
+router.put("/ups/eaton/:upsId/udp/:id", controller.updateRecordEaton);
+router.delete(
+  "/ups/chloride/:location",
+  controller.deleteChlorideAllByLocation
+);
+router.delete("/ups/eaton/:location", controller.deleteEatonAllByLocation);
+
 module.exports = router;

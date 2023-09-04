@@ -22,7 +22,23 @@ const db = client.db(dbName);
 const eaton = db.collection(eatonData);
 const chloride = db.collection(chlorideData);
 const HandleUploadFile = {
+  deleteChlorideAllByLocation: async (req, res) => {
+    const { location } = req.params;
+    const documents = await chloride.deleteMany({ location });
+    // const documents = await chloride.deleteMany({});
+
+    res.json(documents);
+    return res.status(200);
+  },
+  deleteEatonAllByLocation: async (req, res) => {
+    const { location } = req.params;
+    const documents = await eaton.deleteMany({ location });
+    res.json(documents);
+    return res.status(200);
+  },
   uploadFileEaton: async (req, res) => {
+    const { location } = req.params;
+
     try {
       const filePath = path.join(pathSrc, req.file.filename);
       const workbook = new ExcelJS.Workbook();
@@ -55,6 +71,7 @@ const HandleUploadFile = {
         const sheetData = {
           sheetName: sheet.name,
           UDP: [],
+          location,
         };
         for (let i = 2; i <= actualRowCount; i++) {
           // Obj muon tao ra trong DB
@@ -147,6 +164,7 @@ const HandleUploadFile = {
     }
   },
   uploadFileChloride: async (req, res) => {
+    const { location } = req.params;
     try {
       console.log("req.file???", req.file);
       const filePath = path.join(pathSrc, req.file.filename);
@@ -180,6 +198,7 @@ const HandleUploadFile = {
         const sheetData = {
           sheetName: sheet.name,
           UDP: [],
+          location,
         };
         for (let i = 2; i <= actualRowCount; i++) {
           // Obj muon tao ra trong DB
