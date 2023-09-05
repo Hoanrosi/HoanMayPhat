@@ -312,6 +312,7 @@ const HandleUploadFile = {
         e.noiTro = data.noiTro;
         e.dienApDoKiem = data.dienApDoKiem;
         e.nhietDoDoKiem = data.nhietDoDoKiem;
+        e.note = data.node;
       }
     });
     const update = {
@@ -334,6 +335,7 @@ const HandleUploadFile = {
         e.noiTro = data.noiTro;
         e.dienApDoKiem = data.dienApDoKiem;
         e.nhietDoDoKiem = data.nhietDoDoKiem;
+        e.note = data.node;
       }
     });
     const update = {
